@@ -1,0 +1,86 @@
+<mvc:View
+  controllerName="my.apmorrowland.lineupapp.controller.Lineup"
+  displayBlock="true"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core">
+
+  <Page title="Line-up &amp; Planning">
+    <headerContent>
+      <Toolbar>
+
+        <Label text="Dag" class="sapUiTinyMarginEnd"/>
+        <ComboBox
+          id="cbDay"
+          width="14rem"
+          placeholder="Alle dagen"
+          showClearIcon="true"
+          selectionChange=".onFilterChange"
+          items="{ path: '/FestivalDays' }">
+          <core:Item key="{ID}" text="{label}"/>
+        </ComboBox>
+
+        <ToolbarSeparator/>
+
+        <Label text="Stage" class="sapUiTinyMarginEnd"/>
+        <ComboBox
+          id="cbStage"
+          width="14rem"
+          placeholder="Alle stages"
+          showClearIcon="true"
+          selectionChange=".onFilterChange"
+          items="{ path: '/Stages' }">
+          <core:Item key="{ID}" text="{name}"/>
+        </ComboBox>
+
+        <ToolbarSeparator/>
+
+        <Button
+          id="btnSortTime"
+          text="Sorteer op starttijd"
+          type="Transparent"
+          icon="sap-icon://sort"
+          press=".onSortStartTime"/>
+
+        <ToolbarSpacer/>
+
+        <Button
+          text="Refresh"
+          type="Transparent"
+          icon="sap-icon://refresh"
+          press=".onRefresh"/>
+      </Toolbar>
+    </headerContent>
+
+    <content>
+      <VBox class="sapUiMediumMargin">
+        <Text text="Filter op dag en stage. Klik op sorteren om starttijd te togglen." />
+
+        <List
+          id="perfList"
+          class="sapUiSmallMarginTop"
+          growing="true"
+          growingScrollToLoad="true"
+          items="{
+            path: '/Performances',
+            parameters: { $expand: 'artist,stage,festivalDay', $orderby: 'startTime asc' }
+          }">
+
+          <items>
+            <ObjectListItem
+              title="{= ${artist/name} + ' — ' + ${stage/name} }"
+              intro="{festivalDay/label}"
+              number="{startTime}"
+              numberUnit="start">
+              <attributes>
+                <ObjectAttribute title="End" text="{endTime}"/>
+              </attributes>
+            </ObjectListItem>
+          </items>
+
+        </List>
+      </VBox>
+    </content>
+  </Page>
+
+</mvc:View>
