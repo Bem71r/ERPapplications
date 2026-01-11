@@ -1,0 +1,42 @@
+<mvc:View
+  controllerName="my.apmorrowland.artistsapp.controller.ArtistsList"
+  displayBlock="true"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m">
+
+  <Page title="Artists">
+    <content>
+      <VBox class="sapUiMediumMargin">
+        <SearchField
+          id="sfArtist"
+          width="22rem"
+          placeholder="Zoek artiest"
+          liveChange=".onSearch"
+          search=".onSearch"/>
+
+        <List
+          id="artistsList"
+          class="sapUiSmallMarginTop"
+          items="{ path: '/Artists', parameters: { $orderby: 'name asc' } }"
+          growing="true"
+          growingScrollToLoad="true">
+
+          <items>
+            <ObjectListItem
+              type="Navigation"
+              press=".onItemPress"
+              title="{name}"
+              intro="{genre}">
+              <attributes>
+                <ObjectAttribute title="Country" text="{country}"/>
+                <ObjectAttribute title="Popularity" text="{popularity}"/>
+              </attributes>
+            </ObjectListItem>
+          </items>
+
+        </List>
+      </VBox>
+    </content>
+  </Page>
+
+</mvc:View>

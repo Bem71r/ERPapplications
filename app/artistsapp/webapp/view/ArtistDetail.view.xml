@@ -1,0 +1,30 @@
+<mvc:View
+  controllerName="my.apmorrowland.artistsapp.controller.ArtistDetail"
+  displayBlock="true"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m">
+
+  <Page
+    title="Artist detail"
+    showNavButton="true"
+    navButtonPress=".onNavBack">
+
+    <content>
+      <VBox class="sapUiMediumMargin">
+
+        <ObjectHeader
+          title="{name}"
+          intro="{genre}">
+          <attributes>
+            <ObjectAttribute title="Country" text="{country}"/>
+            <ObjectAttribute title="Popularity" text="{popularity}"/>
+          </attributes>
+        </ObjectHeader>
+
+        <Text class="sapUiSmallMarginTop" text="{bio}"/>
+
+      </VBox>
+    </content>
+  </Page>
+
+</mvc:View>

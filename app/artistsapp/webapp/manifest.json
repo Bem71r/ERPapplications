@@ -1,0 +1,94 @@
+{
+  "_version": "1.76.0",
+  "sap.app": {
+    "id": "my.apmorrowland.artistsapp",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/admin/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui5": {
+    "dependencies": {
+      "minUI5Version": "1.143.2",
+      "libs": {
+        "sap.ui.core": {},
+        "sap.m": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "my.apmorrowland.artistsapp.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      }
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "transition": "slide",
+        "type": "View",
+        "viewType": "XML",
+        "path": "my.apmorrowland.artistsapp.view",
+        "async": true,
+        "viewPath": "my.apmorrowland.artistsapp.view"
+      },
+      "routes": [
+        {
+          "name": "RouteArtistsList",
+          "pattern": "",
+          "target": ["TargetArtistsList"]
+        },
+        {
+          "name": "RouteArtistDetail",
+          "pattern": "artist/{artistPath}",
+          "target": ["TargetArtistDetail"]
+        }
+      ],
+      "targets": {
+        "TargetArtistsList": {
+          "id": "ArtistsList",
+          "name": "ArtistsList"
+        },
+        "TargetArtistDetail": {
+          "id": "ArtistDetail",
+          "name": "ArtistDetail"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "my.apmorrowland.artistsapp.view.App",
+      "type": "XML",
+      "id": "App",
+      "async": true
+    }
+  }
+}
