@@ -2,7 +2,8 @@
   controllerName="my.apmorrowland.ordersapp.controller.OrderDetail"
   displayBlock="true"
   xmlns:mvc="sap.ui.core.mvc"
-  xmlns="sap.m">
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core">
 
   <Page
     id="orderDetailPage"
@@ -43,6 +44,24 @@
             }"/>
           <ObjectAttribute title="Order type" text="{orderType}"/>
         </HBox>
+
+        <!-- NIEUW: status aanpassen -->
+        <Toolbar class="sapUiSmallMarginTop">
+          <Title text="Status" level="H3"/>
+          <ToolbarSpacer/>
+          <Button text="Opslaan" type="Emphasized" icon="sap-icon://save" press=".onSaveStatus"/>
+        </Toolbar>
+
+        <Select
+          id="selDetailStatus"
+          width="16rem"
+          selectedKey="{status}">
+          <items>
+            <core:Item key="Processing" text="Processing"/>
+            <core:Item key="Completed"  text="Completed"/>
+            <core:Item key="Cancelled"  text="Cancelled"/>
+          </items>
+        </Select>
 
         <Toolbar class="sapUiSmallMarginTop">
           <Title text="Items" level="H3"/>
