@@ -3,14 +3,21 @@
     id="createOrderDialog"
     title="Nieuwe order"
     contentWidth="46rem"
-    contentHeight="32rem"
+    contentHeight="34rem"
     draggable="true"
     resizable="true">
 
     <content>
       <VBox class="sapUiMediumMargin">
 
-        <Label text="Klant" required="true"/>
+        <!-- Stap 1: klant kiezen of nieuwe klant toevoegen -->
+        <Toolbar>
+          <Title text="Stap 1: Klant" level="H3"/>
+          <ToolbarSpacer/>
+          <Button text="Nieuwe klant" icon="sap-icon://add-contact" press=".onOpenNewCustomer"/>
+        </Toolbar>
+
+        <Label text="Kies bestaande klant" required="true"/>
         <Select
           id="selCustomer"
           width="100%"
@@ -23,7 +30,35 @@
           </items>
         </Select>
 
-        <Label class="sapUiSmallMarginTop" text="Order type" required="true"/>
+        <!-- Inline "nieuwe klant" panel -->
+        <Panel
+          headerText="Nieuwe klant toevoegen"
+          expandable="true"
+          expanded="true"
+          visible="{create>/newCustomerMode}"
+          class="sapUiSmallMarginTop">
+
+          <content>
+            <VBox class="sapUiSmallMargin">
+              <Label text="Voornaam" required="true"/>
+              <Input id="inpNewFirstName" value="{create>/newCustomer/firstName}" width="100%"/>
+
+              <Label class="sapUiSmallMarginTop" text="Achternaam" required="true"/>
+              <Input id="inpNewLastName" value="{create>/newCustomer/lastName}" width="100%"/>
+
+              <Label class="sapUiSmallMarginTop" text="E-mail (optioneel)"/>
+              <Input id="inpNewEmail" value="{create>/newCustomer/email}" width="100%" type="Email"/>
+
+              <HBox class="sapUiSmallMarginTop" justifyContent="End">
+                <Button text="Annuleren" type="Transparent" press=".onCancelNewCustomer"/>
+                <Button text="Klant opslaan" type="Emphasized" icon="sap-icon://save" press=".onSaveNewCustomer"/>
+              </HBox>
+            </VBox>
+          </content>
+        </Panel>
+
+        <!-- Stap 2: order type -->
+        <Label class="sapUiSmallMarginTop" text="Stap 2: Order type" required="true"/>
         <Select
           id="selOrderType"
           width="100%"
@@ -36,8 +71,21 @@
           </items>
         </Select>
 
+        <!-- Uitbreiding: betaalmethode simuleren -->
+        <Label class="sapUiSmallMarginTop" text="(Uitbreiding) Betaalmethode (simulatie)"/>
+        <Select
+          id="selPayment"
+          width="100%"
+          selectedKey="{create>/paymentMethod}">
+          <items>
+            <core:Item key="Bancontact" text="Bancontact"/>
+            <core:Item key="VISA" text="VISA"/>
+          </items>
+        </Select>
+
+        <!-- Stap 3: items -->
         <Toolbar class="sapUiSmallMarginTop">
-          <Title text="Items" level="H3"/>
+          <Title text="Stap 3: Items" level="H3"/>
           <ToolbarSpacer/>
           <Button text="Item toevoegen" icon="sap-icon://add" press=".onAddCreateItem"/>
         </Toolbar>
@@ -97,6 +145,7 @@
           </items>
         </Table>
 
+        <!-- Stap 4: samenvatting -->
         <HBox class="sapUiSmallMarginTop" justifyContent="End">
           <Text text="Totaal:" class="sapUiTinyMarginEnd"/>
           <ObjectNumber

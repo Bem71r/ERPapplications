@@ -19,7 +19,6 @@ sap.ui.define([
 
       this._resetCreateModel();
 
-      // NIEUW: wanneer je terugkeert naar de lijst-route, refreshen we de binding
       this.getOwnerComponent()
         .getRouter()
         .getRoute("RouteOrdersList")
@@ -27,7 +26,6 @@ sap.ui.define([
     },
 
     _onListRouteMatched: function () {
-      // zorgt dat statuswijzigingen uit detail meteen zichtbaar zijn
       this.onRefresh();
     },
 
@@ -35,11 +33,14 @@ sap.ui.define([
       var oData = {
         customerId: "",
         orderType: "Tickets",
+        paymentMethod: "Bancontact",
         currency_code: "EUR",
         totalAmount: 0,
         items: [
           { productId: "", qty: 1, unitPrice: 0, lineTotal: 0 }
-        ]
+        ],
+        newCustomerMode: false,
+        newCustomer: { firstName: "", lastName: "", email: "" }
       };
 
       var oCreateModel = new JSONModel(oData);
@@ -100,7 +101,7 @@ sap.ui.define([
         return;
       }
 
-      var sPath = oCtx.getPath(); // "/Orders(<uuid>)"
+      var sPath = oCtx.getPath();
       var sOrderPath = encodeURIComponent(sPath.slice(1));
 
       this.getOwnerComponent().getRouter().navTo("RouteOrderDetail", {
@@ -109,7 +110,7 @@ sap.ui.define([
     },
 
     /* =========================
-       CREATE ORDER (Dialog)
+       CREATE ORDER
        ========================= */
 
     onOpenCreateOrder: function () {
@@ -120,7 +121,7 @@ sap.ui.define([
       if (this._oCreateDialog) {
         this._oCreateDialog.open();
         var sOrderType = this.getView().getModel("create").getProperty("/orderType");
-        this._applyProductFilterForOrderType(sOrderType);
+        setTimeout(function () { this._applyProductFilterForOrderType(sOrderType); }.bind(this), 0);
         return;
       }
 
@@ -134,9 +135,8 @@ sap.ui.define([
         oDialog.open();
 
         var sOrderType = this.getView().getModel("create").getProperty("/orderType");
-        this._applyProductFilterForOrderType(sOrderType);
+        setTimeout(function () { this._applyProductFilterForOrderType(sOrderType); }.bind(this), 0);
       }.bind(this)).catch(function (e) {
-        /* eslint-disable no-console */
         console.error(e);
         MessageToast.show("Kon Create dialog niet laden (zie console).");
       });
@@ -148,13 +148,91 @@ sap.ui.define([
       }
     },
 
+    /* ===== new customer ===== */
+
+    onOpenNewCustomer: function () {
+      this.getView().getModel("create").setProperty("/newCustomerMode", true);
+    },
+
+    onCancelNewCustomer: function () {
+      var oCreate = this.getView().getModel("create");
+      oCreate.setProperty("/newCustomerMode", false);
+      oCreate.setProperty("/newCustomer", { firstName: "", lastName: "", email: "" });
+    },
+
+    onSaveNewCustomer: function () {
+      var oCreate = this.getView().getModel("create");
+      var oNC = oCreate.getProperty("/newCustomer") || {};
+
+      var sFirst = (oNC.firstName || "").trim();
+      var sLast  = (oNC.lastName || "").trim();
+      var sEmail = (oNC.email || "").trim();
+
+      if (!sFirst || !sLast) {
+        MessageToast.show("Voornaam en achternaam zijn verplicht.");
+        return;
+      }
+      if (sEmail && sEmail.indexOf("@") < 1) {
+        MessageToast.show("E-mail lijkt niet geldig.");
+        return;
+      }
+
+      var oModel = this.getView().getModel();
+      var oListBinding = oModel.bindList("/Customers");
+      var sViewId = this.getView().getId();
+
+      var oCreatedCtx = oListBinding.create({
+        firstName: sFirst,
+        lastName: sLast,
+        email: sEmail
+      });
+
+      oCreatedCtx.created()
+        .then(function () {
+          return oCreatedCtx.requestObject();
+        })
+        .then(function (oObj) {
+          var sNewId = oObj && oObj.ID;
+          if (!sNewId) {
+            MessageToast.show("Nieuwe klant aangemaakt, maar ID ontbreekt.");
+            return;
+          }
+
+          // 1) update model
+          oCreate.setProperty("/customerId", sNewId);
+
+          // 2) refresh Select items zodat nieuwe klant in de lijst staat
+          var oSelCustomer = Fragment.byId(sViewId, "selCustomer");
+          if (oSelCustomer) {
+            var oItemsBinding = oSelCustomer.getBinding("items");
+            if (oItemsBinding) {
+              oItemsBinding.refresh();
+            }
+            // 3) force select key (visueel)
+            oSelCustomer.setSelectedKey(sNewId);
+          }
+
+          // 4) close panel + reset inputs
+          oCreate.setProperty("/newCustomerMode", false);
+          oCreate.setProperty("/newCustomer", { firstName: "", lastName: "", email: "" });
+
+          MessageToast.show("Nieuwe klant toegevoegd en geselecteerd.");
+        })
+        .catch(function (e) {
+          console.error(e);
+          MessageToast.show("Fout bij klant aanmaken (zie console).");
+        });
+    },
+
+    /* ===== order type -> product filtering ===== */
+
     onOrderTypeChange: function (oEvent) {
       var sOrderType = oEvent.getSource().getSelectedKey();
-      this.getView().getModel("create").setProperty("/orderType", sOrderType);
-
-      this._applyProductFilterForOrderType(sOrderType);
-
       var oCreate = this.getView().getModel("create");
+
+      oCreate.setProperty("/orderType", sOrderType);
+
+      // Reset gekozen producten + totals
       var aItems = oCreate.getProperty("/items") || [];
       aItems.forEach(function (it) {
         it.productId = "";
@@ -163,26 +241,29 @@ sap.ui.define([
       });
       oCreate.setProperty("/items", aItems);
       oCreate.setProperty("/totalAmount", 0);
+
+      // Re-apply filter for ALL rows (after UI re-render)
+      setTimeout(function () {
+        this._applyProductFilterForOrderType(sOrderType);
+      }.bind(this), 0);
     },
 
     _applyProductFilterForOrderType: function (sOrderType) {
       var sViewId = this.getView().getId();
-
       var oTable = Fragment.byId(sViewId, "tblItems");
       if (!oTable) { return; }
 
-      var aRows = oTable.getItems();
-      if (!aRows || aRows.length === 0) { return; }
+      var aRows = oTable.getItems() || [];
+      aRows.forEach(function (oRow) {
+        var aCells = oRow.getCells && oRow.getCells();
+        if (!aCells || aCells.length === 0) { return; }
 
-      var oFirstRow = aRows[0];
-      var aCells = oFirstRow.getCells();
-      if (!aCells || aCells.length === 0) { return; }
-
-      var oProductSelect = aCells[0];
-      var oBinding = oProductSelect.getBinding("items");
-      if (!oBinding) { return; }
-
-      oBinding.filter([ new Filter("category", FilterOperator.EQ, sOrderType) ]);
+        var oProductSelect = aCells[0];
+        var oBinding = oProductSelect && oProductSelect.getBinding && oProductSelect.getBinding("items");
+        if (oBinding) {
+          oBinding.filter([ new Filter("category", FilterOperator.EQ, sOrderType) ]);
+        }
+      });
     },
 
     onAddCreateItem: function () {
@@ -192,7 +273,7 @@ sap.ui.define([
       oCreate.setProperty("/items", aItems);
 
       var sOrderType = oCreate.getProperty("/orderType");
-      this._applyProductFilterForOrderType(sOrderType);
+      setTimeout(function () { this._applyProductFilterForOrderType(sOrderType); }.bind(this), 0);
 
       this._recalcCreateTotals();
     },
@@ -210,7 +291,6 @@ sap.ui.define([
       if (!isNaN(iIndex)) {
         aItems.splice(iIndex, 1);
       }
-
       if (aItems.length === 0) {
         aItems.push({ productId: "", qty: 1, unitPrice: 0, lineTotal: 0 });
       }
@@ -218,7 +298,7 @@ sap.ui.define([
       oCreate.setProperty("/items", aItems);
 
       var sOrderType = oCreate.getProperty("/orderType");
-      this._applyProductFilterForOrderType(sOrderType);
+      setTimeout(function () { this._applyProductFilterForOrderType(sOrderType); }.bind(this), 0);
 
       this._recalcCreateTotals();
     },
@@ -260,7 +340,6 @@ sap.ui.define([
           oCreate.setProperty("/totalAmount", fTotal);
         })
         .catch(function (e) {
-          /* eslint-disable no-console */
           console.error(e);
           MessageToast.show("Kon totals niet berekenen (zie console).");
         });
@@ -271,7 +350,7 @@ sap.ui.define([
       var oData = oCreate.getData();
 
       if (!oData.customerId) {
-        MessageToast.show("Kies een klant.");
+        MessageToast.show("Kies een klant (of voeg een nieuwe klant toe).");
         return;
       }
 
@@ -310,12 +389,11 @@ sap.ui.define([
 
       oCreatedCtx.created()
         .then(function () {
-          MessageToast.show("Order aangemaakt.");
+          MessageToast.show("Order aangemaakt. Betaalmethode (simulatie): " + oData.paymentMethod);
           this.onCloseCreateOrder();
           this.onRefresh();
         }.bind(this))
         .catch(function (e) {
-          /* eslint-disable no-console */
           console.error(e);
           MessageToast.show("Fout bij aanmaken order (zie console).");
         });
