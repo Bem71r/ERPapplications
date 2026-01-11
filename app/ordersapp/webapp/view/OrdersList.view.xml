@@ -55,8 +55,7 @@
     <content>
       <VBox class="sapUiMediumMargin">
 
-        <Title text="Orders (met klant)" level="H2"/>
-        <Text text="Zoek, filter en sorteer werken op de lijstbinding."/>
+        <Title text="Orders" level="H2"/>
 
         <List
           id="ordersList"
@@ -73,7 +72,6 @@
               type="Active"
               press=".onItemPress"
               title="{= (${customer/firstName} || '') + ' ' + (${customer/lastName} || '') }"
-              intro="{status}"
               number="{
                 path: 'totalAmount',
                 type: 'sap.ui.model.type.Float',
@@ -89,7 +87,16 @@
                     type: 'sap.ui.model.odata.type.DateTimeOffset',
                     formatOptions: { style: 'medium', UTC: true }
                   }"/>
+                <ObjectAttribute title="Type" text="{orderType}"/>
               </attributes>
+
+              <firstStatus>
+                <ObjectStatus
+                  text="{status}"
+                  state="{= ${status} === 'Completed' ? 'Success'
+                         : ${status} === 'Processing' ? 'Warning'
+                         : ${status} === 'Cancelled'  ? 'Error' : 'None' }"/>
+              </firstStatus>
 
             </ObjectListItem>
           </items>

@@ -18,6 +18,17 @@ sap.ui.define([
       if (oSel) { oSel.setSelectedKey("All"); }
 
       this._resetCreateModel();
+
+      // NIEUW: wanneer je terugkeert naar de lijst-route, refreshen we de binding
+      this.getOwnerComponent()
+        .getRouter()
+        .getRoute("RouteOrdersList")
+        .attachPatternMatched(this._onListRouteMatched, this);
+    },
+
+    _onListRouteMatched: function () {
+      // zorgt dat statuswijzigingen uit detail meteen zichtbaar zijn
+      this.onRefresh();
     },
 
     _resetCreateModel: function () {
@@ -104,16 +115,12 @@ sap.ui.define([
     onOpenCreateOrder: function () {
       var sViewId = this.getView().getId();
 
-      // reset state elke keer dat je open doet (stabiel)
       this._resetCreateModel();
 
       if (this._oCreateDialog) {
         this._oCreateDialog.open();
-
-        // Pas meteen filter toe op basis van default orderType
         var sOrderType = this.getView().getModel("create").getProperty("/orderType");
         this._applyProductFilterForOrderType(sOrderType);
-
         return;
       }
 
@@ -143,14 +150,10 @@ sap.ui.define([
 
     onOrderTypeChange: function (oEvent) {
       var sOrderType = oEvent.getSource().getSelectedKey();
-
-      // update create model
       this.getView().getModel("create").setProperty("/orderType", sOrderType);
 
-      // Filter products volgens gekozen type
       this._applyProductFilterForOrderType(sOrderType);
 
-      // Reset alle gekozen producten (anders kan je een ticket-product in merch houden)
       var oCreate = this.getView().getModel("create");
       var aItems = oCreate.getProperty("/items") || [];
       aItems.forEach(function (it) {
@@ -165,9 +168,6 @@ sap.ui.define([
     _applyProductFilterForOrderType: function (sOrderType) {
       var sViewId = this.getView().getId();
 
-      // Product Select in fragment (de standalone bovenaan) bestaat niet; we filteren de items-select(s) in de table.
-      // Omdat elke rij zijn eigen Select heeft, filteren we de binding op template-niveau door de eerste gevonden Select te nemen:
-      // we pakken de Table en filteren via zijn items -> eerste row -> eerste cell (Select).
       var oTable = Fragment.byId(sViewId, "tblItems");
       if (!oTable) { return; }
 
@@ -178,14 +178,11 @@ sap.ui.define([
       var aCells = oFirstRow.getCells();
       if (!aCells || aCells.length === 0) { return; }
 
-      var oProductSelect = aCells[0]; // eerste cell = Select
+      var oProductSelect = aCells[0];
       var oBinding = oProductSelect.getBinding("items");
       if (!oBinding) { return; }
 
-      // Mapping: orderType == category in Products
-      var sCategory = sOrderType; // Tickets/Merch/Food
-
-      oBinding.filter([ new Filter("category", FilterOperator.EQ, sCategory) ]);
+      oBinding.filter([ new Filter("category", FilterOperator.EQ, sOrderType) ]);
     },
 
     onAddCreateItem: function () {
@@ -194,7 +191,6 @@ sap.ui.define([
       aItems.push({ productId: "", qty: 1, unitPrice: 0, lineTotal: 0 });
       oCreate.setProperty("/items", aItems);
 
-      // Zorg dat de filter ook geldt voor nieuwe rows (template binding)
       var sOrderType = oCreate.getProperty("/orderType");
       this._applyProductFilterForOrderType(sOrderType);
 
@@ -207,7 +203,7 @@ sap.ui.define([
 
       var oItem = oEvent.getParameter("listItem");
       var oCtx = oItem.getBindingContext("create");
-      var sPath = oCtx && oCtx.getPath(); // "/items/0"
+      var sPath = oCtx && oCtx.getPath();
       if (!sPath) { return; }
 
       var iIndex = parseInt(sPath.split("/").pop(), 10);
@@ -234,7 +230,7 @@ sap.ui.define([
     _recalcCreateTotals: function () {
       var oCreate = this.getView().getModel("create");
       var aItems = oCreate.getProperty("/items") || [];
-      var oODataModel = this.getView().getModel(); // default OData V4 model
+      var oODataModel = this.getView().getModel();
 
       var aPromises = aItems.map(function (it) {
         var sProductId = it.productId;
@@ -289,7 +285,6 @@ sap.ui.define([
         return;
       }
 
-      // totals up-to-date
       this._recalcCreateTotals();
 
       var oModel = this.getView().getModel();
