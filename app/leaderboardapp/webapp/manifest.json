@@ -1,0 +1,85 @@
+{
+  "_version": "1.76.0",
+  "sap.app": {
+    "id": "my.apmorrowland.leaderboardapp",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/analytics/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui5": {
+    "dependencies": {
+      "minUI5Version": "1.143.2",
+      "libs": {
+        "sap.ui.core": {},
+        "sap.m": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "my.apmorrowland.leaderboardapp.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      }
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "transition": "slide",
+        "type": "View",
+        "viewType": "XML",
+        "path": "my.apmorrowland.leaderboardapp.view",
+        "async": true,
+        "viewPath": "my.apmorrowland.leaderboardapp.view"
+      },
+      "routes": [
+        {
+          "name": "RouteLeaderboard",
+          "pattern": "",
+          "target": ["TargetLeaderboard"]
+        }
+      ],
+      "targets": {
+        "TargetLeaderboard": {
+          "id": "Leaderboard",
+          "name": "Leaderboard"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "my.apmorrowland.leaderboardapp.view.App",
+      "type": "XML",
+      "id": "App",
+      "async": true
+    }
+  }
+}

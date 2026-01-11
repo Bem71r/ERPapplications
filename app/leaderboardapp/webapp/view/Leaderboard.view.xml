@@ -1,0 +1,83 @@
+<mvc:View
+  controllerName="my.apmorrowland.leaderboardapp.controller.Leaderboard"
+  displayBlock="true"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m">
+
+  <Page title="Leaderboard">
+    <headerContent>
+      <Toolbar>
+        <SearchField
+          id="sfSearch"
+          width="18rem"
+          placeholder="Zoek op naam/genre/land"
+          liveChange=".onSearch"
+          search=".onSearch"/>
+
+        <ToolbarSeparator/>
+
+        <Label text="Min reviews" class="sapUiTinyMarginEnd"/>
+        <Input
+          id="inpMinReviews"
+          width="6rem"
+          type="Number"
+          value="0"
+          liveChange=".onApplyFilters"/>
+
+        <ToolbarSeparator/>
+
+        <Button
+          id="btnSort"
+          text="Sorteer op rating"
+          type="Transparent"
+          icon="sap-icon://sort"
+          press=".onSort"/>
+
+        <ToolbarSpacer/>
+
+        <Button
+          text="Refresh"
+          type="Transparent"
+          icon="sap-icon://refresh"
+          press=".onRefresh"/>
+      </Toolbar>
+    </headerContent>
+
+    <content>
+      <VBox class="sapUiMediumMargin">
+        <Text text="Ranking op basis van gemiddelde rating en aantal reviews." />
+
+        <List
+          id="lbList"
+          class="sapUiSmallMarginTop"
+          growing="true"
+          growingScrollToLoad="true"
+          items="{
+            path: '/Leaderboard',
+            parameters: { $orderby: 'avgRating desc' }
+          }">
+
+          <items>
+            <ObjectListItem
+              title="{name}"
+              intro="{= ${genre} + ' • ' + ${country} }"
+              number="{
+                path: 'avgRating',
+                type: 'sap.ui.model.type.Float',
+                formatOptions: { maxFractionDigits: 2 }
+              }"
+              numberUnit="★">
+
+              <attributes>
+                <ObjectAttribute title="Reviews" text="{reviewCount}"/>
+              </attributes>
+
+            </ObjectListItem>
+          </items>
+
+        </List>
+      </VBox>
+    </content>
+  </Page>
+
+</mvc:View>
