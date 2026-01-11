@@ -12,24 +12,39 @@
     <content>
       <VBox class="sapUiMediumMargin">
 
-        <ObjectHeader
-          title="{name}"
-          intro="{genre}">
-          <attributes>
-            <ObjectAttribute title="Country" text="{country}"/>
-            <ObjectAttribute title="Popularity" text="{popularity}"/>
-            <ObjectAttribute title="Avg rating" text="{= ${vm>/avgRatingText} }"/>
-          </attributes>
-        </ObjectHeader>
+        <!-- Header + extra visuals -->
+        <HBox justifyContent="SpaceBetween" wrap="Wrap">
+          <HBox alignItems="Center">
+            <Avatar
+              displaySize="M"
+              initials="{vm>/initials}"
+              class="sapUiSmallMarginEnd"/>
+            <VBox>
+              <Title text="{name}" level="H2"/>
+              <Text text="{= ${genre} + ' • ' + ${country} }"/>
+            </VBox>
+          </HBox>
 
-        <!-- NIEUW/DUidelijk: biografie + fallback -->
-        <Toolbar class="sapUiMediumMarginTop">
+          <VBox>
+            <ObjectStatus
+              text="{vm>/labelText}"
+              state="{vm>/labelState}"
+              class="sapUiTinyMarginBottom"/>
+            <ObjectAttribute title="Trending score" text="{vm>/trendingText}"/>
+          </VBox>
+        </HBox>
+
+        <Toolbar class="sapUiSmallMarginTop">
           <Title text="Biografie &amp; achtergrond" level="H3"/>
+          <ToolbarSpacer/>
+          <Link text="Spotify" href="{vm>/spotifyUrl}" target="_blank"/>
+          <ToolbarSeparator/>
+          <Link text="Instagram" href="{vm>/instagramUrl}" target="_blank"/>
         </Toolbar>
 
         <Text
           class="sapUiSmallMarginTop"
-          text="{= ${bio} ? ${bio} : 'Geen biografie toegevoegd. Voeg bij “Nieuwe artiest” een bio toe zodat het festivalteam voldoende context heeft.' }"
+          text="{= ${bio} ? ${bio} : 'Geen biografie toegevoegd. Voeg optioneel een bio toe bij “Nieuwe artiest” zodat het festivalteam extra context heeft.' }"
           wrapping="true" />
 
         <Toolbar class="sapUiMediumMarginTop">
@@ -52,6 +67,8 @@
         <Toolbar class="sapUiMediumMarginTop">
           <Title text="Reviews" level="H3"/>
           <ToolbarSpacer/>
+          <ObjectAttribute title="Avg rating" text="{vm>/avgRatingText}"/>
+          <ToolbarSeparator/>
           <Button text="Review toevoegen" icon="sap-icon://add" press=".onOpenAddReview"/>
         </Toolbar>
 

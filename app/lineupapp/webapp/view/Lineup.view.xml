@@ -3,7 +3,8 @@
   displayBlock="true"
   xmlns:mvc="sap.ui.core.mvc"
   xmlns="sap.m"
-  xmlns:core="sap.ui.core">
+  xmlns:core="sap.ui.core"
+  xmlns:unified="sap.ui.unified">
 
   <Page title="Line-up &amp; Planning">
     <headerContent>
@@ -53,33 +54,77 @@
     </headerContent>
 
     <content>
-      <VBox class="sapUiMediumMargin">
-        <Text text="Filter op dag en stage. Klik op sorteren om starttijd te togglen." />
+      <IconTabBar id="itb" expanded="true">
+        <items>
 
-        <List
-          id="perfList"
-          class="sapUiSmallMarginTop"
-          growing="true"
-          growingScrollToLoad="true"
-          items="{
-            path: '/Performances',
-            parameters: { $expand: 'artist,stage,festivalDay', $orderby: 'startTime asc' }
-          }">
+          <!-- TAB 1: Overzicht -->
+          <IconTabFilter text="Overzicht" key="list" icon="sap-icon://list">
+            <VBox class="sapUiMediumMargin">
+              <Text text="Filter op dag en stage. Klik op sorteren om starttijd te togglen." />
 
-          <items>
-            <ObjectListItem
-              title="{= ${artist/name} + ' — ' + ${stage/name} }"
-              intro="{festivalDay/label}"
-              number="{startTime}"
-              numberUnit="start">
-              <attributes>
-                <ObjectAttribute title="End" text="{endTime}"/>
-              </attributes>
-            </ObjectListItem>
-          </items>
+              <List
+                id="perfList"
+                class="sapUiSmallMarginTop"
+                growing="true"
+                growingScrollToLoad="true"
+                items="{
+                  path: '/Performances',
+                  parameters: { $expand: 'artist,stage,festivalDay', $orderby: 'startTime asc' }
+                }">
 
-        </List>
-      </VBox>
+                <items>
+                  <ObjectListItem
+                    title="{= ${artist/name} + ' — ' + ${stage/name} }"
+                    intro="{festivalDay/label}"
+                    number="{startTime}"
+                    numberUnit="start">
+                    <attributes>
+                      <ObjectAttribute title="End" text="{endTime}"/>
+                    </attributes>
+                  </ObjectListItem>
+                </items>
+
+              </List>
+            </VBox>
+          </IconTabFilter>
+
+          <!-- TAB 2: Kalender -->
+          <IconTabFilter text="Kalender" key="calendar" icon="sap-icon://calendar">
+            <VBox class="sapUiMediumMargin">
+              <Text text="Kalenderweergave per stage (rij) met performances als afspraken." />
+
+              <PlanningCalendar
+                id="pc"
+                startDate="{cal>/startDate}"
+                rows="{cal>/rows}"
+                showDayNamesLine="true"
+                showWeekNumbers="true"
+                appointmentSelect=".onAppointmentSelect"
+                appointmentsVisualization="Filled">
+
+                <rows>
+                  <PlanningCalendarRow
+                    title="{cal>stageName}"
+                    text="{cal>stageCapacity}"
+                    appointments="{cal>appointments}">
+                    <appointments>
+                      <unified:CalendarAppointment
+                        title="{cal>title}"
+                        text="{cal>text}"
+                        startDate="{cal>start}"
+                        endDate="{cal>end}"
+                        type="{cal>type}"/>
+                    </appointments>
+                  </PlanningCalendarRow>
+                </rows>
+
+              </PlanningCalendar>
+
+            </VBox>
+          </IconTabFilter>
+
+        </items>
+      </IconTabBar>
     </content>
   </Page>
 

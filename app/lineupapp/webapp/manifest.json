@@ -1,7 +1,7 @@
 {
   "_version": "1.76.0",
   "sap.app": {
-    "id": "my.apmorrowland.leaderboardapp",
+    "id": "my.apmorrowland.lineupapp",
     "type": "application",
     "i18n": "i18n/i18n.properties",
     "applicationVersion": {
@@ -11,14 +11,6 @@
     "description": "{{appDescription}}",
     "dataSources": {
       "mainService": {
-        "uri": "/odata/v4/analytics/",
-        "type": "OData",
-        "settings": {
-          "annotations": [],
-          "odataVersion": "4.0"
-        }
-      },
-      "adminService": {
         "uri": "/odata/v4/admin/",
         "type": "OData",
         "settings": {
@@ -34,7 +26,7 @@
       "libs": {
         "sap.ui.core": {},
         "sap.m": {},
-        "sap.suite.ui.microchart": {}
+        "sap.ui.unified": {}
       }
     },
     "contentDensities": {
@@ -45,20 +37,11 @@
       "i18n": {
         "type": "sap.ui.model.resource.ResourceModel",
         "settings": {
-          "bundleName": "my.apmorrowland.leaderboardapp.i18n.i18n"
+          "bundleName": "my.apmorrowland.lineupapp.i18n.i18n"
         }
       },
       "": {
         "dataSource": "mainService",
-        "preload": true,
-        "settings": {
-          "operationMode": "Server",
-          "autoExpandSelect": true,
-          "earlyRequests": true
-        }
-      },
-      "admin": {
-        "dataSource": "adminService",
         "preload": true,
         "settings": {
           "operationMode": "Server",
@@ -75,26 +58,26 @@
         "transition": "slide",
         "type": "View",
         "viewType": "XML",
-        "path": "my.apmorrowland.leaderboardapp.view",
+        "path": "my.apmorrowland.lineupapp.view",
         "async": true,
-        "viewPath": "my.apmorrowland.leaderboardapp.view"
+        "viewPath": "my.apmorrowland.lineupapp.view"
       },
       "routes": [
         {
-          "name": "RouteLeaderboard",
+          "name": "RouteLineup",
           "pattern": "",
-          "target": ["TargetLeaderboard"]
+          "target": ["TargetLineup"]
         }
       ],
       "targets": {
-        "TargetLeaderboard": {
-          "id": "Leaderboard",
-          "name": "Leaderboard"
+        "TargetLineup": {
+          "id": "Lineup",
+          "name": "Lineup"
         }
       }
     },
     "rootView": {
-      "viewName": "my.apmorrowland.leaderboardapp.view.App",
+      "viewName": "my.apmorrowland.lineupapp.view.App",
       "type": "XML",
       "id": "App",
       "async": true

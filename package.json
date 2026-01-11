@@ -19,7 +19,10 @@
     "watch-ordersapp": "cds watch --open my.apmorrowland.ordersapp/index.html?sap-ui-xx-viewCache=false --livereload false",
     "undeploy": "cf undeploy apmorrowland --delete-services --delete-service-keys --delete-service-brokers",
     "build": "rimraf resources mta_archives && mbt build --mtar archive",
-    "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
+    "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
+    "watch-artistsapp": "cds watch --open my.apmorrowland.artistsapp/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-lineupapp": "cds watch --open my.apmorrowland.lineupapp/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-leaderboardapp": "cds watch --open my.apmorrowland.leaderboardapp/index.html?sap-ui-xx-viewCache=false --livereload false"
   },
   "private": true,
   "cds": {},

@@ -42,6 +42,14 @@ modules:
       - myapmorrowlandordersapp.zip
       name: myapmorrowlandordersapp
       target-path: resources/
+    - artifacts:
+      - myapmorrowlandlineupapp.zip
+      name: myapmorrowlandlineupapp
+      target-path: resources/
+    - artifacts:
+      - myapmorrowlandleaderboardapp.zip
+      name: myapmorrowlandleaderboardapp
+      target-path: resources/
 - name: myapmorrowlandordersappordersapp
   type: html5
   path: app/ordersapp
@@ -55,6 +63,26 @@ modules:
 - name: myapmorrowlandordersapp
   type: html5
   path: app/ordersapp
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: myapmorrowlandlineupapp
+  type: html5
+  path: app/lineupapp
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: myapmorrowlandleaderboardapp
+  type: html5
+  path: app/leaderboardapp
   build-parameters:
     build-result: dist
     builder: custom

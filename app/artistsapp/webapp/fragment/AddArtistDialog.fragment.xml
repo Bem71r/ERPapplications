@@ -22,9 +22,13 @@
         <Label class="sapUiSmallMarginTop" text="Popularity (0-100)"/>
         <Input id="inpAPop" width="10rem" type="Number" value="50"/>
 
-        <!-- Bio nu verplicht + duidelijke titel -->
-        <Label class="sapUiSmallMarginTop" text="Biografie &amp; achtergrond" required="true"/>
-        <TextArea id="taABio" width="100%" rows="5" placeholder="Korte achtergrond + stijl van de artiest..."/>
+        <!-- Bio is nu optioneel -->
+        <Label class="sapUiSmallMarginTop" text="Biografie &amp; achtergrond (optioneel)"/>
+        <TextArea
+          id="taABio"
+          width="100%"
+          rows="5"
+          placeholder="(Optioneel) Korte achtergrond + stijl van de artiest..."/>
 
         <Toolbar class="sapUiMediumMarginTop">
           <Title text="Eerste performance plannen" level="H3"/>

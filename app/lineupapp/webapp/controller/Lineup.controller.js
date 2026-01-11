@@ -4,8 +4,11 @@ sap.ui.define([
   "sap/ui/model/FilterOperator",
   "sap/ui/model/Sorter",
   "sap/m/MessageToast",
-  "sap/ui/model/json/JSONModel"
-], function (Controller, Filter, FilterOperator, Sorter, MessageToast, JSONModel) {
+  "sap/ui/model/json/JSONModel",
+  "sap/m/ResponsivePopover",
+  "sap/m/VBox",
+  "sap/m/Text"
+], function (Controller, Filter, FilterOperator, Sorter, MessageToast, JSONModel, ResponsivePopover, VBox, Text) {
   "use strict";
 
   return Controller.extend("my.apmorrowland.lineupapp.controller.Lineup", {
@@ -19,7 +22,7 @@ sap.ui.define([
         rows: []
       }), "cal");
 
-      // Wacht tot OData model + metadata klaar zijn, dan pas kalender bouwen
+      // Wacht tot metadata klaar is, dan pas kalender bouwen
       var oModel = this._getODataModel();
       if (oModel && oModel.getMetaModel && oModel.getMetaModel().requestObject) {
         oModel.getMetaModel().requestObject("/").then(function () {
@@ -27,14 +30,13 @@ sap.ui.define([
         }.bind(this));
       }
 
-      // Extra safety: als model later pas gezet wordt, bouw dan alsnog
+      // Safety: als model later pas gezet wordt, bouw dan alsnog
       this.getView().attachModelContextChange(function () {
         this._buildCalendar();
       }.bind(this));
     },
 
     _getODataModel: function () {
-      // OwnerComponent model is het meest betrouwbaar
       return (this.getOwnerComponent && this.getOwnerComponent().getModel && this.getOwnerComponent().getModel())
         || this.getView().getModel();
     },
@@ -57,6 +59,7 @@ sap.ui.define([
         oBinding.filter(aFilters);
       }
 
+      // Kalender opnieuw opbouwen met dezelfde filters
       this._buildCalendar();
     },
 
@@ -84,13 +87,13 @@ sap.ui.define([
     },
 
     /* =========================
-       Calendar builder (uitbreiding)
+       Calendar builder
        ========================= */
 
     _buildCalendar: function () {
       var oModel = this._getODataModel();
       if (!oModel || !oModel.bindList) {
-        // Model nog niet klaar -> geen crash, gewoon wachten
+        // Model nog niet klaar -> geen crash
         return;
       }
 
@@ -100,13 +103,13 @@ sap.ui.define([
       var sDayId = this.byId("cbDay") ? this.byId("cbDay").getSelectedKey() : "";
       var sStageId = this.byId("cbStage") ? this.byId("cbStage").getSelectedKey() : "";
 
-      // 1) Stages ophalen
+      // Stages ophalen
       var pStages = oModel.bindList("/Stages").requestContexts(0, 200).then(function (aCtx) {
         var aStagesAll = aCtx.map(function (c) { return c.getObject(); });
         return sStageId ? aStagesAll.filter(function (st) { return st.ID === sStageId; }) : aStagesAll;
       });
 
-      // 2) Performances ophalen met expand + filters
+      // Performances ophalen met expand + filters
       var aPerfFilters = [];
       if (sDayId) aPerfFilters.push(new Filter("festivalDay_ID", FilterOperator.EQ, sDayId));
       if (sStageId) aPerfFilters.push(new Filter("stage_ID", FilterOperator.EQ, sStageId));
@@ -190,6 +193,40 @@ sap.ui.define([
         console.error(e);
         MessageToast.show("Kalender kon niet laden (zie console).");
       });
+    },
+
+    /* =========================
+       Appointment popover (uitbreiding)
+       ========================= */
+
+    onAppointmentSelect: function (oEvent) {
+      var oAppt = oEvent.getParameter("appointment");
+      if (!oAppt) return;
+
+      var sTitle = oAppt.getTitle();
+      var sText = oAppt.getText();
+      var dS = oAppt.getStartDate();
+      var dE = oAppt.getEndDate();
+
+      if (!this._oApptPopover) {
+        this._oApptPopover = new ResponsivePopover({
+          title: "Performance details",
+          contentWidth: "24rem"
+        });
+        this.getView().addDependent(this._oApptPopover);
+      }
+
+      this._oApptPopover.removeAllContent();
+      this._oApptPopover.addContent(new VBox({
+        items: [
+          new Text({ text: "Artist: " + sTitle }),
+          new Text({ text: sText }),
+          new Text({ text: "Start: " + (dS ? dS.toLocaleString() : "") }),
+          new Text({ text: "End: " + (dE ? dE.toLocaleString() : "") })
+        ]
+      }));
+
+      this._oApptPopover.openBy(oAppt);
     }
 
   });

@@ -45,10 +45,11 @@
           <ObjectAttribute title="Order type" text="{orderType}"/>
         </HBox>
 
-        <!-- NIEUW: status aanpassen -->
         <Toolbar class="sapUiSmallMarginTop">
           <Title text="Status" level="H3"/>
           <ToolbarSpacer/>
+          <Button text="Print bevestiging" icon="sap-icon://print" type="Transparent" press=".onPrintOrder"/>
+          <ToolbarSeparator/>
           <Button text="Opslaan" type="Emphasized" icon="sap-icon://save" press=".onSaveStatus"/>
         </Toolbar>
 

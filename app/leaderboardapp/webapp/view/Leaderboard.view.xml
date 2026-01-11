@@ -2,7 +2,9 @@
   controllerName="my.apmorrowland.leaderboardapp.controller.Leaderboard"
   displayBlock="true"
   xmlns:mvc="sap.ui.core.mvc"
-  xmlns="sap.m">
+  xmlns="sap.m"
+  xmlns:micro="sap.suite.ui.microchart"
+  xmlns:core="sap.ui.core">
 
   <Page title="Leaderboard">
     <headerContent>
@@ -45,37 +47,114 @@
 
     <content>
       <VBox class="sapUiMediumMargin">
-        <Text text="Ranking op basis van gemiddelde rating en aantal reviews." />
+        <Text text="Leaderboard toont avg rating, aantal reviews en rank. Uitbreidingen: Top per genre + trend microchart." />
 
-        <List
-          id="lbList"
-          class="sapUiSmallMarginTop"
-          growing="true"
-          growingScrollToLoad="true"
-          items="{
-            path: '/Leaderboard',
-            parameters: { $orderby: 'avgRating desc' }
-          }">
-
+        <IconTabBar id="itb" expanded="true" select=".onTabSelect">
           <items>
-            <ObjectListItem
-              title="{name}"
-              intro="{= ${genre} + ' • ' + ${country} }"
-              number="{
-                path: 'avgRating',
-                type: 'sap.ui.model.type.Float',
-                formatOptions: { maxFractionDigits: 2 }
-              }"
-              numberUnit="★">
 
-              <attributes>
-                <ObjectAttribute title="Reviews" text="{reviewCount}"/>
-              </attributes>
+            <!-- TAB 1: Overall -->
+            <IconTabFilter text="Overall" key="overall" icon="sap-icon://leaderboard">
+              <List id="lbOverall" items="{vm>/itemsOverall}" growing="true" growingScrollToLoad="true">
+                <items>
+                  <CustomListItem>
+                    <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
 
-            </ObjectListItem>
+                      <VBox width="70%">
+                        <Title text="{= (${vm>badge} ? (${vm>badge} + ' ') : '') + ${vm>name} }" level="H4"/>
+                        <Text text="{= ${vm>genre} + ' • ' + ${vm>country} }"/>
+                        <HBox class="sapUiTinyMarginTop" wrap="Wrap">
+                          <ObjectStatus text="{= 'Rank: ' + ${vm>rank} }" state="None"/>
+                          <ObjectStatus class="sapUiTinyMarginBegin" text="{= 'Reviews: ' + ${vm>reviewCount} }" state="None"/>
+                        </HBox>
+                      </VBox>
+
+                      <VBox width="30%" alignItems="End">
+                        <ObjectNumber
+                          number="{
+                            path: 'vm>avgRating',
+                            type: 'sap.ui.model.type.Float',
+                            formatOptions: { maxFractionDigits: 2 }
+                          }"
+                          unit="★"/>
+
+                        <!-- FIX: templateShareable false + points binding -->
+                        <micro:LineMicroChart
+                          size="S"
+                          width="10rem"
+                          points="{vm>trendPoints}"
+                          templateShareable="false">
+                          <micro:points>
+                            <micro:LineMicroChartPoint x="{vm>x}" y="{vm>y}"/>
+                          </micro:points>
+                        </micro:LineMicroChart>
+                      </VBox>
+
+                    </HBox>
+                  </CustomListItem>
+                </items>
+              </List>
+            </IconTabFilter>
+
+            <!-- TAB 2: Top per genre -->
+            <IconTabFilter text="Top per genre" key="genre" icon="sap-icon://filter">
+              <VBox class="sapUiSmallMarginTop">
+                <HBox alignItems="Center" wrap="Wrap">
+                  <Label text="Genre" class="sapUiTinyMarginEnd"/>
+                  <Select
+                    id="selTopGenre"
+                    width="18rem"
+                    items="{vm>/genres}"
+                    selectedKey="{vm>/selectedGenre}"
+                    change=".onGenreChange">
+                    <items>
+                      <core:Item key="{vm>key}" text="{vm>text}"/>
+                    </items>
+                  </Select>
+                </HBox>
+
+                <List id="lbGenre" class="sapUiSmallMarginTop" items="{vm>/itemsGenre}" growing="true" growingScrollToLoad="true">
+                  <items>
+                    <CustomListItem>
+                      <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
+
+                        <VBox width="70%">
+                          <Title text="{= (${vm>badge} ? (${vm>badge} + ' ') : '') + ${vm>name} }" level="H4"/>
+                          <Text text="{= ${vm>genre} + ' • ' + ${vm>country} }"/>
+                          <HBox class="sapUiTinyMarginTop" wrap="Wrap">
+                            <ObjectStatus text="{= 'Rank (genre): ' + ${vm>rank} }" state="None"/>
+                            <ObjectStatus class="sapUiTinyMarginBegin" text="{= 'Reviews: ' + ${vm>reviewCount} }" state="None"/>
+                          </HBox>
+                        </VBox>
+
+                        <VBox width="30%" alignItems="End">
+                          <ObjectNumber
+                            number="{
+                              path: 'vm>avgRating',
+                              type: 'sap.ui.model.type.Float',
+                              formatOptions: { maxFractionDigits: 2 }
+                            }"
+                            unit="★"/>
+
+                          <micro:LineMicroChart
+                            size="S"
+                            width="10rem"
+                            points="{vm>trendPoints}"
+                            templateShareable="false">
+                            <micro:points>
+                              <micro:LineMicroChartPoint x="{vm>x}" y="{vm>y}"/>
+                            </micro:points>
+                          </micro:LineMicroChart>
+                        </VBox>
+
+                      </HBox>
+                    </CustomListItem>
+                  </items>
+                </List>
+              </VBox>
+            </IconTabFilter>
+
           </items>
-
-        </List>
+        </IconTabBar>
       </VBox>
     </content>
   </Page>

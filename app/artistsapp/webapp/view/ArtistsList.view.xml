@@ -2,17 +2,76 @@
   controllerName="my.apmorrowland.artistsapp.controller.ArtistsList"
   displayBlock="true"
   xmlns:mvc="sap.ui.core.mvc"
-  xmlns="sap.m">
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core">
 
   <Page title="Artists">
-    <content>
-      <VBox class="sapUiMediumMargin">
+    <headerContent>
+      <Toolbar>
         <SearchField
           id="sfArtist"
-          width="22rem"
-          placeholder="Zoek artiest"
+          width="18rem"
+          placeholder="Zoek artiest (naam)"
           liveChange=".onSearch"
           search=".onSearch"/>
+
+        <ToolbarSeparator/>
+
+        <Select id="selGenre" width="12rem" change=".onApplyFilters">
+          <items>
+            <core:Item key="All" text="Alle genres"/>
+            <core:Item key="EDM" text="EDM"/>
+            <core:Item key="Techno" text="Techno"/>
+            <core:Item key="Pop" text="Pop"/>
+            <core:Item key="Indie" text="Indie"/>
+            <core:Item key="House" text="House"/>
+            <core:Item key="Rock" text="Rock"/>
+            <core:Item key="Drum &amp; Bass" text="Drum &amp; Bass"/>
+          </items>
+        </Select>
+
+        <ToolbarSeparator/>
+
+        <Select id="selCountry" width="12rem" change=".onApplyFilters">
+          <items>
+            <core:Item key="All" text="Alle landen"/>
+            <core:Item key="Belgium" text="Belgium"/>
+            <core:Item key="Germany" text="Germany"/>
+            <core:Item key="Netherlands" text="Netherlands"/>
+            <core:Item key="UK" text="UK"/>
+            <core:Item key="France" text="France"/>
+            <core:Item key="USA" text="USA"/>
+            <core:Item key="Italy" text="Italy"/>
+          </items>
+        </Select>
+
+        <ToolbarSeparator/>
+
+        <Button
+          id="btnSort"
+          text="Sorteer op populariteit"
+          type="Transparent"
+          icon="sap-icon://sort"
+          press=".onSortPopularity"/>
+
+        <ToolbarSpacer/>
+
+        <Button
+          text="Nieuwe artiest"
+          type="Emphasized"
+          icon="sap-icon://add"
+          press=".onOpenAddArtist"/>
+
+        <Button
+          text="Refresh"
+          type="Transparent"
+          icon="sap-icon://refresh"
+          press=".onRefresh"/>
+      </Toolbar>
+    </headerContent>
+
+    <content>
+      <VBox class="sapUiMediumMargin">
 
         <List
           id="artistsList"
