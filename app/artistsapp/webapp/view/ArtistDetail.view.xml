@@ -18,23 +18,47 @@
           <attributes>
             <ObjectAttribute title="Country" text="{country}"/>
             <ObjectAttribute title="Popularity" text="{popularity}"/>
+            <ObjectAttribute title="Avg rating" text="{= ${vm>/avgRatingText} }"/>
           </attributes>
         </ObjectHeader>
 
-        <Text class="sapUiSmallMarginTop" text="{bio}"/>
+        <!-- NIEUW/DUidelijk: biografie + fallback -->
+        <Toolbar class="sapUiMediumMarginTop">
+          <Title text="Biografie &amp; achtergrond" level="H3"/>
+        </Toolbar>
+
+        <Text
+          class="sapUiSmallMarginTop"
+          text="{= ${bio} ? ${bio} : 'Geen biografie toegevoegd. Voeg bij “Nieuwe artiest” een bio toe zodat het festivalteam voldoende context heeft.' }"
+          wrapping="true" />
+
+        <Toolbar class="sapUiMediumMarginTop">
+          <Title text="Optredens (planning)" level="H3"/>
+          <ToolbarSpacer/>
+          <Button text="Refresh" icon="sap-icon://refresh" type="Transparent" press=".onRefreshAll"/>
+        </Toolbar>
+
+        <List
+          id="perfList"
+          items="{ path: 'performances' }"
+          noDataText="Nog geen optredens gepland.">
+          <items>
+            <ObjectListItem
+              title="{= ${festivalDay/label} + ' — ' + ${stage/name} }"
+              intro="{= ${startTime} + ' - ' + ${endTime} }"/>
+          </items>
+        </List>
 
         <Toolbar class="sapUiMediumMarginTop">
           <Title text="Reviews" level="H3"/>
           <ToolbarSpacer/>
           <Button text="Review toevoegen" icon="sap-icon://add" press=".onOpenAddReview"/>
-          <Button text="Refresh" icon="sap-icon://refresh" type="Transparent" press=".onRefreshReviews"/>
         </Toolbar>
 
         <List
           id="reviewsList"
           items="{ path: 'reviews' }"
           noDataText="Nog geen reviews. Voeg de eerste review toe.">
-
           <items>
             <ObjectListItem
               title="{reviewerName}"
@@ -45,7 +69,6 @@
               </attributes>
             </ObjectListItem>
           </items>
-
         </List>
 
       </VBox>

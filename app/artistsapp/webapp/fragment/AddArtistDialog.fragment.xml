@@ -1,0 +1,71 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+  <Dialog
+    id="addArtistDialog"
+    title="Nieuwe artiest toevoegen"
+    contentWidth="44rem"
+    draggable="true"
+    resizable="true">
+
+    <content>
+      <VBox class="sapUiMediumMargin">
+        <Title text="Basisgegevens" level="H3"/>
+
+        <Label text="Naam" required="true"/>
+        <Input id="inpAName" width="100%"/>
+
+        <Label class="sapUiSmallMarginTop" text="Genre" required="true"/>
+        <Input id="inpAGenre" width="100%" placeholder="bv. Techno"/>
+
+        <Label class="sapUiSmallMarginTop" text="Land" required="true"/>
+        <Input id="inpACountry" width="100%" placeholder="bv. Belgium"/>
+
+        <Label class="sapUiSmallMarginTop" text="Popularity (0-100)"/>
+        <Input id="inpAPop" width="10rem" type="Number" value="50"/>
+
+        <!-- Bio nu verplicht + duidelijke titel -->
+        <Label class="sapUiSmallMarginTop" text="Biografie &amp; achtergrond" required="true"/>
+        <TextArea id="taABio" width="100%" rows="5" placeholder="Korte achtergrond + stijl van de artiest..."/>
+
+        <Toolbar class="sapUiMediumMarginTop">
+          <Title text="Eerste performance plannen" level="H3"/>
+        </Toolbar>
+
+        <Label text="Festivaldag" required="true"/>
+        <Select id="selDay" width="100%" items="{ path: '/FestivalDays' }">
+          <items>
+            <core:Item key="{ID}" text="{label}"/>
+          </items>
+        </Select>
+
+        <Label class="sapUiSmallMarginTop" text="Stage" required="true"/>
+        <Select id="selStage" width="100%" items="{ path: '/Stages' }">
+          <items>
+            <core:Item key="{ID}" text="{name}"/>
+          </items>
+        </Select>
+
+        <HBox class="sapUiSmallMarginTop" justifyContent="Start" wrap="Wrap">
+          <VBox width="10rem">
+            <Label text="Start (HH:MM)" required="true"/>
+            <Input id="inpStart" width="8rem" placeholder="20:00"/>
+          </VBox>
+          <VBox width="10rem" class="sapUiSmallMarginBegin">
+            <Label text="End (HH:MM)" required="true"/>
+            <Input id="inpEnd" width="8rem" placeholder="21:00"/>
+          </VBox>
+        </HBox>
+
+        <Text class="sapUiSmallMarginTop" text="Na opslaan verschijnt de artiest meteen in de line-up (via Performances)." />
+
+      </VBox>
+    </content>
+
+    <beginButton>
+      <Button text="Opslaan" type="Emphasized" press=".onSaveArtist"/>
+    </beginButton>
+    <endButton>
+      <Button text="Annuleren" press=".onCloseAddArtist"/>
+    </endButton>
+
+  </Dialog>
+</core:FragmentDefinition>
