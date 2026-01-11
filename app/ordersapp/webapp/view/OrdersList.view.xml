@@ -1,0 +1,103 @@
+<mvc:View
+  controllerName="my.apmorrowland.ordersapp.controller.OrdersList"
+  displayBlock="true"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core">
+
+  <Page id="page" title="Orders">
+    <headerContent>
+      <Toolbar>
+        <SearchField
+          id="sfSearch"
+          width="18rem"
+          placeholder="Zoek op klant of status"
+          liveChange=".onSearch"
+          search=".onSearch" />
+
+        <ToolbarSeparator/>
+
+        <Select id="selStatus" width="12rem" change=".onFilterStatus">
+          <items>
+            <core:Item key="All"        text="Alle statussen"/>
+            <core:Item key="Processing" text="Processing"/>
+            <core:Item key="Completed"  text="Completed"/>
+            <core:Item key="Cancelled"  text="Cancelled"/>
+          </items>
+        </Select>
+
+        <ToolbarSeparator/>
+
+        <Button
+          id="btnSort"
+          text="Sorteer op datum"
+          type="Transparent"
+          icon="sap-icon://sort"
+          press=".onSortDate"/>
+
+        <ToolbarSpacer/>
+
+        <Button
+          id="btnCreate"
+          text="Nieuwe order"
+          type="Emphasized"
+          icon="sap-icon://add"
+          press=".onOpenCreateOrder"/>
+
+        <Button
+          text="Refresh"
+          type="Transparent"
+          icon="sap-icon://refresh"
+          press=".onRefresh"/>
+      </Toolbar>
+    </headerContent>
+
+    <content>
+      <VBox class="sapUiMediumMargin">
+
+        <Title text="Orders (met klant)" level="H2"/>
+        <Text text="Zoek, filter en sorteer werken op de lijstbinding."/>
+
+        <List
+          id="ordersList"
+          class="sapUiSmallMarginTop"
+          items="{
+            path: '/Orders',
+            parameters: { $expand: 'customer', $orderby: 'orderDate desc' }
+          }"
+          growing="true"
+          growingScrollToLoad="true">
+
+          <items>
+            <ObjectListItem
+              type="Active"
+              press=".onItemPress"
+              title="{= (${customer/firstName} || '') + ' ' + (${customer/lastName} || '') }"
+              intro="{status}"
+              number="{
+                path: 'totalAmount',
+                type: 'sap.ui.model.type.Float',
+                formatOptions: { maxFractionDigits: 2 }
+              }"
+              numberUnit="{currency_code}">
+
+              <attributes>
+                <ObjectAttribute
+                  title="Order date"
+                  text="{
+                    path: 'orderDate',
+                    type: 'sap.ui.model.odata.type.DateTimeOffset',
+                    formatOptions: { style: 'medium', UTC: true }
+                  }"/>
+              </attributes>
+
+            </ObjectListItem>
+          </items>
+
+        </List>
+
+      </VBox>
+    </content>
+  </Page>
+
+</mvc:View>

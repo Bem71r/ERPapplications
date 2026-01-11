@@ -1,0 +1,122 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+  <Dialog
+    id="createOrderDialog"
+    title="Nieuwe order"
+    contentWidth="46rem"
+    contentHeight="32rem"
+    draggable="true"
+    resizable="true">
+
+    <content>
+      <VBox class="sapUiMediumMargin">
+
+        <Label text="Klant" required="true"/>
+        <Select
+          id="selCustomer"
+          width="100%"
+          selectedKey="{create>/customerId}"
+          items="{ path: '/Customers' }">
+          <items>
+            <core:Item
+              key="{ID}"
+              text="{= (${firstName} || '') + ' ' + (${lastName} || '') }"/>
+          </items>
+        </Select>
+
+        <Label class="sapUiSmallMarginTop" text="Order type" required="true"/>
+        <Select
+          id="selOrderType"
+          width="100%"
+          selectedKey="{create>/orderType}"
+          change=".onOrderTypeChange">
+          <items>
+            <core:Item key="Tickets" text="Tickets"/>
+            <core:Item key="Merch"   text="Merch"/>
+            <core:Item key="Food"    text="Food"/>
+          </items>
+        </Select>
+
+        <Toolbar class="sapUiSmallMarginTop">
+          <Title text="Items" level="H3"/>
+          <ToolbarSpacer/>
+          <Button text="Item toevoegen" icon="sap-icon://add" press=".onAddCreateItem"/>
+        </Toolbar>
+
+        <Table
+          id="tblItems"
+          items="{create>/items}"
+          mode="Delete"
+          delete=".onDeleteCreateItem"
+          class="sapUiSmallMarginTop">
+
+          <columns>
+            <Column width="18rem"><Text text="Product"/></Column>
+            <Column width="6rem" hAlign="End"><Text text="Aantal"/></Column>
+            <Column width="8rem" hAlign="End"><Text text="Unit"/></Column>
+            <Column width="8rem" hAlign="End"><Text text="Totaal"/></Column>
+          </columns>
+
+          <items>
+            <ColumnListItem>
+              <cells>
+
+                <Select
+                  width="100%"
+                  selectedKey="{create>productId}"
+                  items="{ path: '/Products' }"
+                  change=".onRecalcCreateTotals">
+                  <items>
+                    <core:Item key="{ID}" text="{name}"/>
+                  </items>
+                </Select>
+
+                <Input
+                  type="Number"
+                  textAlign="End"
+                  value="{create>qty}"
+                  liveChange=".onRecalcCreateTotals"/>
+
+                <ObjectNumber
+                  number="{
+                    path: 'create>unitPrice',
+                    type: 'sap.ui.model.type.Float',
+                    formatOptions: { maxFractionDigits: 2 }
+                  }"
+                  unit="{create>/currency_code}"/>
+
+                <ObjectNumber
+                  number="{
+                    path: 'create>lineTotal',
+                    type: 'sap.ui.model.type.Float',
+                    formatOptions: { maxFractionDigits: 2 }
+                  }"
+                  unit="{create>/currency_code}"/>
+
+              </cells>
+            </ColumnListItem>
+          </items>
+        </Table>
+
+        <HBox class="sapUiSmallMarginTop" justifyContent="End">
+          <Text text="Totaal:" class="sapUiTinyMarginEnd"/>
+          <ObjectNumber
+            number="{
+              path: 'create>/totalAmount',
+              type: 'sap.ui.model.type.Float',
+              formatOptions: { maxFractionDigits: 2 }
+            }"
+            unit="{create>/currency_code}"/>
+        </HBox>
+
+      </VBox>
+    </content>
+
+    <beginButton>
+      <Button text="Aanmaken" type="Emphasized" press=".onCreateOrder"/>
+    </beginButton>
+    <endButton>
+      <Button text="Annuleren" press=".onCloseCreateOrder"/>
+    </endButton>
+
+  </Dialog>
+</core:FragmentDefinition>

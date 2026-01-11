@@ -1,0 +1,126 @@
+{
+  "_version": "1.76.0",
+  "sap.app": {
+    "id": "my.apmorrowland.ordersapp",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.20.0",
+      "toolsId": "7d1594b5-22c4-4dd3-ba73-afd67af6cace"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/admin/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.143.2",
+      "libs": {
+        "sap.ui.core": {},
+        "sap.m": {},
+        "sap.f": {},
+        "sap.ui.layout": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "my.apmorrowland.ordersapp.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "transition": "slide",
+        "type": "View",
+        "viewType": "XML",
+        "path": "my.apmorrowland.ordersapp.view",
+        "async": true,
+        "viewPath": "my.apmorrowland.ordersapp.view"
+      },
+      "routes": [
+        {
+          "name": "RouteOrdersList",
+          "pattern": ":?query:",
+          "target": ["TargetOrdersList"]
+        },
+        {
+          "name": "RouteOrderDetail",
+          "pattern": "order/{orderPath}",
+          "target": ["TargetOrderDetail"]
+        }
+      ],
+      "targets": {
+        "TargetOrdersList": {
+          "id": "OrdersList",
+          "name": "OrdersList"
+        },
+        "TargetOrderDetail": {
+          "id": "OrderDetail",
+          "name": "OrderDetail"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "my.apmorrowland.ordersapp.view.App",
+      "type": "XML",
+      "id": "App",
+      "async": true
+    }
+  }
+}

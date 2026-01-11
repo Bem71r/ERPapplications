@@ -1,0 +1,89 @@
+<mvc:View
+  controllerName="my.apmorrowland.ordersapp.controller.OrderDetail"
+  displayBlock="true"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m">
+
+  <Page
+    id="orderDetailPage"
+    title="Order detail"
+    showNavButton="true"
+    navButtonPress=".onNavBack">
+
+    <content>
+      <VBox class="sapUiMediumMargin">
+
+        <ObjectHeader
+          title="{= (${customer/firstName} || '') + ' ' + (${customer/lastName} || '') }"
+          intro="Order"
+          number="{
+            path: 'totalAmount',
+            type: 'sap.ui.model.type.Float',
+            formatOptions: { maxFractionDigits: 2 }
+          }"
+          numberUnit="{currency_code}">
+
+          <statuses>
+            <ObjectStatus
+              text="{status}"
+              state="{= ${status} === 'Completed' ? 'Success'
+                     : ${status} === 'Processing' ? 'Warning'
+                     : ${status} === 'Cancelled'  ? 'Error' : 'None' }"/>
+          </statuses>
+
+        </ObjectHeader>
+
+        <HBox class="sapUiSmallMarginTop" justifyContent="SpaceBetween" wrap="Wrap">
+          <ObjectAttribute
+            title="Order date"
+            text="{
+              path: 'orderDate',
+              type: 'sap.ui.model.odata.type.DateTimeOffset',
+              formatOptions: { style: 'medium', UTC: true }
+            }"/>
+          <ObjectAttribute title="Order type" text="{orderType}"/>
+        </HBox>
+
+        <Toolbar class="sapUiSmallMarginTop">
+          <Title text="Items" level="H3"/>
+          <ToolbarSpacer/>
+          <Button text="Refresh" icon="sap-icon://refresh" press=".onRefreshDetail"/>
+        </Toolbar>
+
+        <List
+          id="itemsList"
+          class="sapUiSmallMarginTop"
+          items="{ path: 'items' }">
+
+          <items>
+            <ObjectListItem
+              title="{product/name}"
+              intro="{product/category}"
+              number="{
+                path: 'lineTotal',
+                type: 'sap.ui.model.type.Float',
+                formatOptions: { maxFractionDigits: 2 }
+              }"
+              numberUnit="{../../currency_code}">
+
+              <attributes>
+                <ObjectAttribute title="Qty" text="{quantity}"/>
+                <ObjectAttribute
+                  title="Unit price"
+                  text="{
+                    path: 'unitPrice',
+                    type: 'sap.ui.model.type.Float',
+                    formatOptions: { maxFractionDigits: 2 }
+                  }"/>
+              </attributes>
+
+            </ObjectListItem>
+          </items>
+
+        </List>
+
+      </VBox>
+    </content>
+  </Page>
+
+</mvc:View>
