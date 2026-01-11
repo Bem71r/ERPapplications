@@ -23,6 +23,31 @@
 
         <Text class="sapUiSmallMarginTop" text="{bio}"/>
 
+        <Toolbar class="sapUiMediumMarginTop">
+          <Title text="Reviews" level="H3"/>
+          <ToolbarSpacer/>
+          <Button text="Review toevoegen" icon="sap-icon://add" press=".onOpenAddReview"/>
+          <Button text="Refresh" icon="sap-icon://refresh" type="Transparent" press=".onRefreshReviews"/>
+        </Toolbar>
+
+        <List
+          id="reviewsList"
+          items="{ path: 'reviews' }"
+          noDataText="Nog geen reviews. Voeg de eerste review toe.">
+
+          <items>
+            <ObjectListItem
+              title="{reviewerName}"
+              intro="{= 'Rating: ' + ${rating} + '/5' }">
+              <attributes>
+                <ObjectAttribute title="Date" text="{reviewDate}"/>
+                <ObjectAttribute title="Comment" text="{comment}"/>
+              </attributes>
+            </ObjectListItem>
+          </items>
+
+        </List>
+
       </VBox>
     </content>
   </Page>

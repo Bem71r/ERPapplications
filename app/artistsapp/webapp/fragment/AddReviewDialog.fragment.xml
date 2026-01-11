@@ -1,0 +1,38 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+  <Dialog
+    id="addReviewDialog"
+    title="Review toevoegen"
+    contentWidth="34rem"
+    draggable="true"
+    resizable="true">
+
+    <content>
+      <VBox class="sapUiMediumMargin">
+        <Label text="Reviewer name" required="true"/>
+        <Input id="inpReviewer" width="100%"/>
+
+        <Label class="sapUiSmallMarginTop" text="Rating (1-5)" required="true"/>
+        <Select id="selRating" width="8rem" selectedKey="5">
+          <items>
+            <core:Item key="1" text="1"/>
+            <core:Item key="2" text="2"/>
+            <core:Item key="3" text="3"/>
+            <core:Item key="4" text="4"/>
+            <core:Item key="5" text="5"/>
+          </items>
+        </Select>
+
+        <Label class="sapUiSmallMarginTop" text="Comment" required="true"/>
+        <TextArea id="taComment" width="100%" rows="4"/>
+
+      </VBox>
+    </content>
+
+    <beginButton>
+      <Button text="Opslaan" type="Emphasized" press=".onSaveReview"/>
+    </beginButton>
+    <endButton>
+      <Button text="Annuleren" press=".onCloseAddReview"/>
+    </endButton>
+  </Dialog>
+</core:FragmentDefinition>
